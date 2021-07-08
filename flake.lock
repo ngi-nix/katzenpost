@@ -1,0 +1,61 @@
+{
+  "nodes": {
+    "gomod2nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "utils": "utils"
+      },
+      "locked": {
+        "lastModified": 1617032337,
+        "narHash": "sha256-BTmMxdIJyjOvOpNOaExcyvmJKI9OuhpWyXfOK164Epc=",
+        "owner": "tweag",
+        "repo": "gomod2nix",
+        "rev": "c78d7b9f15a24eba95fbc228509f513c83709d8b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tweag",
+        "repo": "gomod2nix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1625294093,
+        "narHash": "sha256-TkdX0I0aXCvvFRnBAIIj3HjqWAyCzXzcWa6szKjtDL4=",
+        "path": "/nix/store/5hy98i77zn9h67ap74w8zr541ccq1pbn-source",
+        "rev": "a908087f05622c3453628ce35aa2e522d52cefcd",
+        "type": "path"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "root": {
+      "inputs": {
+        "gomod2nix": "gomod2nix",
+        "nixpkgs": "nixpkgs"
+      }
+    },
+    "utils": {
+      "locked": {
+        "lastModified": 1601282935,
+        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
