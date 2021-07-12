@@ -22,6 +22,15 @@
           catchat = final.callPackage ./packages/catchat.nix {}; 
         };
 
+      hydraJobs = forAllSystems (system:
+        let
+          pkgs = self.packages.${system};
+        in {
+          build-katzenpost-server = pkgs.katzenpost-server;
+          build-katzenpost-authority-voting = pkgs.katzenpost-authority.override { voting = true; };
+          build-katzenpost-authority-nonvoting = pkgs.katzenpost-authority.override { voting = false; };
+        });
+
       defaultPackage = forAllSystems (system:
         let
           pkgs = import nixpkgs { inherit system; overlays = [ gomod2nix.overlay self.overlays.katzenpost ]; };

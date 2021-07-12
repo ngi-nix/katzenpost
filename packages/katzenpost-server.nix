@@ -24,4 +24,12 @@ buildGoApplication {
     rev = "v" + version;
     sha256 = "sha256-gvb7y484/ONfcRFkls2Mx/RfbySrdw7oD6hQ755m7w8=";
   };
+
+  meta = with lib; {
+    homepage = "https://github.com/katzenpost/server";
+    description = "A library for implementing the server side of the Katzenpost mix network: mixes and providers.";
+    license = licenses.agpl3Only;
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ magic_rb ];
+  };
 }

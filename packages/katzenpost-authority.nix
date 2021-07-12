@@ -26,4 +26,12 @@ buildGoApplication {
     rev = "v" + version;
     sha256 = "sha256-hC/huErdgTUHZJQ/BSRPhIK9pYQ8xO5fgyP5QCKykr4=";
   };
+
+  meta = with lib; {
+    homepage = "https://github.com/katzenpost/authority";
+    description = "Katzenpost mix network directory authority/PKI library.";
+    license = licenses.agpl3Only;
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ magic_rb ];
+  };
 }
