@@ -1,5 +1,6 @@
 { buildGoApplication
 , fetchFromGitHub
+, lib
 
 , voting ? true
 }:

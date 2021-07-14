@@ -1,5 +1,6 @@
 { buildGoApplication
 , fetchFromGitHub
+, lib
 }:
 let
   version = "0.0.21";
