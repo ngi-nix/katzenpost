@@ -22,7 +22,7 @@
         overlays.katzenpost = final: prev:
           {
             katzenpost-server = final.callPackage ./packages/katzenpost-server.nix { inherit src; };
-            katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix {};
+            katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix { inherit src; };
             catshadow = final.callPackage ./packages/catshadow.nix {};
             catchat = final.callPackage ./packages/catchat.nix {};
 
