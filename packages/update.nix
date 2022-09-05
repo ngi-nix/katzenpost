@@ -1,8 +1,8 @@
-{ src
-, writeShellScriptBin
-, gomod2nix
+{
+  src,
+  writeShellScriptBin,
+  gomod2nix,
 }:
-
 writeShellScriptBin "update-nixified-dependencies" ''
   export PATH=${gomod2nix}/bin:$PATH
 

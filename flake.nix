@@ -11,67 +11,77 @@
     };
   };
 
-  outputs = { self, nixpkgs, gomod2nix, src }:
-    let
-      supportedSystems = [ "x86_64-linux" ];
-      forSystems = systems: fun: nixpkgs.lib.genAttrs systems fun;
-      forAllSystems = forSystems supportedSystems;
-    in
-      with nixpkgs.lib;
-      {
-        overlays.katzenpost = final: prev:
-          {
-            katzenpost-server = final.callPackage ./packages/katzenpost-server.nix { inherit src; };
-            katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix { inherit src; };
+  outputs = {
+    self,
+    nixpkgs,
+    gomod2nix,
+    src,
+  }: let
+    supportedSystems = ["x86_64-linux"];
+    forSystems = systems: fun: nixpkgs.lib.genAttrs systems fun;
+    forAllSystems = forSystems supportedSystems;
+    nixpkgsFor = forAllSystems (system:
+      import nixpkgs {
+        inherit system;
+        overlays = [
+          gomod2nix.overlays.default
+          self.overlays.default
+        ];
+      });
+  in {
+    overlays.default = final: prev: {
+      katzenpost-server =
+        final.callPackage
+        ./packages/katzenpost-server.nix
+        {inherit src;};
+      katzenpost-authority =
+        final.callPackage
+        ./packages/katzenpost-authority.nix
+        {inherit src;};
 
-            update = final.callPackage ./packages/update.nix { inherit src; };
-          };
+      update =
+        final.callPackage
+        ./packages/update.nix
+        {inherit src;};
+    };
 
-        defaultPackage = forAllSystems (system:
-          let
-            pkgs = import nixpkgs { inherit system; overlays = [
-              gomod2nix.overlays.default
-              self.overlays.katzenpost
-            ]; };
-          in
-            pkgs.symlinkJoin
-              { name = "katzenpost";
-                paths = with pkgs; [
-                  katzenpost-server
-                  katzenpost-authority
-                ];
-              }
-        );
-
-        packages = forAllSystems (system:
-          let
-            pkgs = import nixpkgs { inherit system; overlays = [
-              gomod2nix.overlays.default
-              self.overlays.katzenpost
-            ]; };
-          in
-            {
-              inherit (pkgs)
-                katzenpost-server
-                katzenpost-authority
-                update;
-            }
-        );
-
-        apps = forAllSystems (system: rec {
-          update = {
-            type = "app";
-            program = "${self.packages.${system}.update}/bin/update-nixified-dependencies";
-          };
-        });
-
-        hydraJobs = forAllSystems (system:
-          let
-            pkgs = self.packages.${system};
-          in {
-            build-katzenpost-server = pkgs.katzenpost-server;
-            build-katzenpost-authority-voting = pkgs.katzenpost-authority.override { voting = true; };
-            build-katzenpost-authority-nonvoting = pkgs.katzenpost-authority.override { voting = false; };
-          });
+    packages = forAllSystems (system: let
+      pkgs = nixpkgsFor.${system};
+    in rec {
+      inherit
+        (pkgs)
+        katzenpost-server
+        katzenpost-authority
+        update
+        ;
+      default = pkgs.symlinkJoin {
+        name = "katzenpost";
+        paths = [
+          katzenpost-server
+          katzenpost-authority
+        ];
       };
+    });
+
+    apps = forAllSystems (system: rec {
+      update = {
+        type = "app";
+        program = "${self.packages.${system}.update}/bin/update-nixified-dependencies";
+      };
+      format = {
+        type = "app";
+        program = "${nixpkgsFor.${system}.alejandra}/bin/alejandra";
+      };
+    });
+
+    hydraJobs = forAllSystems (system: let
+      pkgs = self.packages.${system};
+    in {
+      build-katzenpost-server = pkgs.katzenpost-server;
+      build-katzenpost-authority-voting =
+        pkgs.katzenpost-authority.override {voting = true;};
+      build-katzenpost-authority-nonvoting =
+        pkgs.katzenpost-authority.override {voting = false;};
+    });
+  };
 }

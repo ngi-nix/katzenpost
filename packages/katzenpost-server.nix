@@ -1,9 +1,9 @@
-{ src
-, buildGoApplication
-, fetchFromGitHub
-, lib
+{
+  src,
+  buildGoApplication,
+  fetchFromGitHub,
+  lib,
 }:
-
 buildGoApplication rec {
   pname = "katzenpost-server";
   version = "0.0.11";
@@ -24,6 +24,6 @@ buildGoApplication rec {
     description = "A library for implementing the server side of the Katzenpost mix network: mixes and providers.";
     license = licenses.agpl3Only;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ magic_rb ];
+    maintainers = with maintainers; [magic_rb];
   };
 }

@@ -1,11 +1,10 @@
-{ src
-, buildGoApplication
-, fetchFromGitHub
-, lib
-
-, voting ? true
+{
+  src,
+  buildGoApplication,
+  fetchFromGitHub,
+  lib,
+  voting ? true,
 }:
-
 buildGoApplication {
   pname = "katzenpost-authority";
   version = "0.0.11";
@@ -14,11 +13,20 @@ buildGoApplication {
   modules = ../deps/gomod2nix.toml;
 
   subPackages = [
-    ("authority/" + (if voting then "cmd/voting" else "cmd/nonvoting"))
+    ("authority/"
+      + (
+        if voting
+        then "cmd/voting"
+        else "cmd/nonvoting"
+      ))
   ];
 
   postInstall = ''
-    mv $out/bin/${if voting then "voting" else "nonvoting"} $out/bin/katzenpost-authority
+    mv $out/bin/${
+      if voting
+      then "voting"
+      else "nonvoting"
+    } $out/bin/katzenpost-authority
   '';
 
   meta = with lib; {
@@ -26,6 +34,6 @@ buildGoApplication {
     description = "Katzenpost mix network directory authority/PKI library.";
     license = licenses.agpl3Only;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ magic_rb ];
+    maintainers = with maintainers; [magic_rb];
   };
 }
