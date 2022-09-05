@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "nixpkgs";
     gomod2nix = {
-      url = "github:nix-community/gomod2nix/v1.5.0";
+      url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     src = {
