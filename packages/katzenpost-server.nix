@@ -1,30 +1,23 @@
-{ buildGoApplication
+{ src
+, buildGoApplication
 , fetchFromGitHub
 , lib
 }:
-let
-  version = "0.0.21";
-in
-buildGoApplication {
+
+buildGoApplication rec {
   pname = "katzenpost-server";
-  inherit version;
+  version = "0.0.11";
+
+  inherit src;
+  modules = ../deps/gomod2nix.toml;
 
   subPackages = [
-    "cmd/server"
+    "server/cmd/server"
   ];
-
-  modules = ../gomod2nix/katzenpost-server.toml;
 
   postInstall = ''
     mv $out/bin/server $out/bin/katzenpost-server
   '';
-
-  src = fetchFromGitHub {
-    owner = "katzenpost";
-    repo = "server";
-    rev = "v" + version;
-    sha256 = "sha256-gvb7y484/ONfcRFkls2Mx/RfbySrdw7oD6hQ755m7w8=";
-  };
 
   meta = with lib; {
     homepage = "https://github.com/katzenpost/server";
