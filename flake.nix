@@ -1,17 +1,21 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
-    gomod2nix ={
-      url = "github:tweag/gomod2nix";
-      inputs."nixpkgs".follows = "nixpkgs";
+    gomod2nix = {
+      url = "github:nix-community/gomod2nix/v1.5.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    src = {
+      url = "github:katzenpost/katzenpost/v0.0.11";
+      flake = false;
     };
   };
 
-  outputs = { nixpkgs, self, gomod2nix }:
+  outputs = { self, nixpkgs, gomod2nix, src }:
     let
       supportedSystems = [ "x86_64-linux" ];
-      forAllSystems' = systems: fun: nixpkgs.lib.genAttrs systems fun;
-      forAllSystems = forAllSystems' supportedSystems;
+      forSystems = systems: fun: nixpkgs.lib.genAttrs systems fun;
+      forAllSystems = forSystems supportedSystems;
     in
       with nixpkgs.lib;
       {
@@ -21,6 +25,8 @@
             katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix {};
             catshadow = final.callPackage ./packages/catshadow.nix {};
             catchat = final.callPackage ./packages/catchat.nix {};
+
+            update = final.callPackage ./packages/update.nix { inherit src; };
           };
 
         hydraJobs = forAllSystems (system:
@@ -34,7 +40,10 @@
 
         defaultPackage = forAllSystems (system:
           let
-            pkgs = import nixpkgs { inherit system; overlays = [ gomod2nix.overlay self.overlays.katzenpost ]; };
+            pkgs = import nixpkgs { inherit system; overlays = [
+              gomod2nix.overlays.default
+              self.overlays.katzenpost
+            ]; };
           in
             pkgs.symlinkJoin
               { name = "katzenpost";
@@ -48,27 +57,25 @@
 
         packages = forAllSystems (system:
           let
-            pkgs = import nixpkgs { inherit system; overlays = [ gomod2nix.overlay self.overlays.katzenpost ]; };
+            pkgs = import nixpkgs { inherit system; overlays = [
+              gomod2nix.overlays.default
+              self.overlays.katzenpost
+            ]; };
           in
             {
               inherit (pkgs)
                 katzenpost-server
                 katzenpost-authority
-                catchat;
+                catchat
+                update;
             }
         );
 
-        apps = mapAttrs (_: v:
-          mapAttrs (_: a:
-            {
-              type = "app";
-              program = a;
-            }
-          ) v
-        ) self.packages;
-
-        defaultApp = mapAttrs (_: v:
-          v.catchat
-        ) self.apps;
+        apps = forAllSystems (system: rec {
+          update = {
+            type = "app";
+            program = "${self.packages.${system}.update}/bin/update-nixified-dependencies";
+          };
+        });
       };
 }
