@@ -38,11 +38,6 @@
         final.callPackage
         ./packages/katzenpost-authority.nix
         {inherit src;};
-
-      update =
-        final.callPackage
-        ./packages/update.nix
-        {inherit src;};
     };
 
     packages = forAllSystems (system: let
@@ -52,7 +47,6 @@
         (pkgs)
         katzenpost-server
         katzenpost-authority
-        update
         ;
       default = pkgs.symlinkJoin {
         name = "katzenpost";
@@ -63,10 +57,13 @@
       };
     });
 
-    apps = forAllSystems (system: rec {
+    apps = forAllSystems (system: let
+      pkgs = nixpkgsFor.${system};
+      update = pkgs.callPackage ./packages/update.nix {inherit src;};
+    in {
       update = {
         type = "app";
-        program = "${self.packages.${system}.update}/bin/update-nixified-dependencies";
+        program = "${update}/bin/update-nixified-dependencies";
       };
       format = {
         type = "app";
