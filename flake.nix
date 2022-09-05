@@ -23,20 +23,9 @@
           {
             katzenpost-server = final.callPackage ./packages/katzenpost-server.nix { inherit src; };
             katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix { inherit src; };
-            catshadow = final.callPackage ./packages/catshadow.nix {};
-            catchat = final.callPackage ./packages/catchat.nix {};
 
             update = final.callPackage ./packages/update.nix { inherit src; };
           };
-
-        hydraJobs = forAllSystems (system:
-          let
-            pkgs = self.packages.${system};
-          in {
-            build-katzenpost-server = pkgs.katzenpost-server;
-            build-katzenpost-authority-voting = pkgs.katzenpost-authority.override { voting = true; };
-            build-katzenpost-authority-nonvoting = pkgs.katzenpost-authority.override { voting = false; };
-          });
 
         defaultPackage = forAllSystems (system:
           let
@@ -47,11 +36,10 @@
           in
             pkgs.symlinkJoin
               { name = "katzenpost";
-                paths = with pkgs;
-                  [ katzenpost-server
-                    katzenpost-authority
-                    catchat
-                  ];
+                paths = with pkgs; [
+                  katzenpost-server
+                  katzenpost-authority
+                ];
               }
         );
 
@@ -66,7 +54,6 @@
               inherit (pkgs)
                 katzenpost-server
                 katzenpost-authority
-                catchat
                 update;
             }
         );
@@ -77,5 +64,14 @@
             program = "${self.packages.${system}.update}/bin/update-nixified-dependencies";
           };
         });
+
+        hydraJobs = forAllSystems (system:
+          let
+            pkgs = self.packages.${system};
+          in {
+            build-katzenpost-server = pkgs.katzenpost-server;
+            build-katzenpost-authority-voting = pkgs.katzenpost-authority.override { voting = true; };
+            build-katzenpost-authority-nonvoting = pkgs.katzenpost-authority.override { voting = false; };
+          });
       };
 }
