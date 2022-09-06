@@ -31,9 +31,6 @@ clue how to build it. It uses [qt](https://github.com/therecipe/qt/) (go binding
 ## Updating
 
 1. Edit the `src` url in `flake.nix` to point to your desired commit.
-2. `nix flake update` (udpate flake inputs)
-3. `nix run .#update` (update nixified dependencies: go modules)
-
-## Formatting
-
-`nix run .#format .`
+2. Update `version`s in `packages/*`.
+3. `nix flake update` (udpate flake inputs)
+4. `nix run .#update` (update nixified dependencies: go modules)
