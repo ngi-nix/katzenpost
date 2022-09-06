@@ -81,11 +81,9 @@
         type = "app";
         program = "${update}/bin/update-nixified-dependencies";
       };
-      format = {
-        type = "app";
-        program = "${nixpkgsFor.${system}.alejandra}/bin/alejandra";
-      };
     });
+
+    formatter = forAllSystems (system: nixpkgsFor.${system}.alejandra);
 
     hydraJobs = forAllSystems (system: let
       pkgs = self.packages.${system};
