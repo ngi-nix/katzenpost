@@ -1,10 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
-    gomod2nix = {
-      url = "github:nix-community/gomod2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     server-src = {
       url = "github:katzenpost/katzenpost/v0.0.11";
       flake = false;
@@ -18,7 +14,6 @@
   outputs = {
     self,
     nixpkgs,
-    gomod2nix,
     server-src,
     client-src,
   }: let
@@ -29,7 +24,6 @@
       import nixpkgs {
         inherit system;
         overlays = [
-          gomod2nix.overlays.default
           self.overlays.default
         ];
       });
@@ -68,18 +62,6 @@
           katzenpost-authority
           katzen
         ];
-      };
-    });
-
-    apps = forAllSystems (system: let
-      pkgs = nixpkgsFor.${system};
-      update = pkgs.callPackage ./packages/update.nix {
-        inherit server-src client-src;
-      };
-    in {
-      update = {
-        type = "app";
-        program = "${update}/bin/update-nixified-dependencies";
       };
     });
 

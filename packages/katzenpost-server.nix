@@ -1,14 +1,14 @@
 {
   src,
-  buildGoApplication,
+  buildGoModule,
   lib,
 }:
-buildGoApplication rec {
+buildGoModule {
   pname = "katzenpost-server";
   version = "0.0.11";
 
   inherit src;
-  modules = ../deps/server.toml;
+  vendorSha256 = "sha256-qTPXpKovcocKdMUOP6zQHQMySwdqVSXFTdaX5mjpTLU=";
 
   subPackages = [
     "server/cmd/server"

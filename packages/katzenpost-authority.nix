@@ -1,15 +1,15 @@
 {
   src,
-  buildGoApplication,
+  buildGoModule,
   lib,
   voting ? true,
 }:
-buildGoApplication {
+buildGoModule {
   pname = "katzenpost-authority";
   version = "0.0.11";
 
   inherit src;
-  modules = ../deps/server.toml;
+  vendorSha256 = "sha256-qTPXpKovcocKdMUOP6zQHQMySwdqVSXFTdaX5mjpTLU=";
 
   subPackages = [
     ("authority/"

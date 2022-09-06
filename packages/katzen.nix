@@ -1,6 +1,6 @@
 {
   src,
-  buildGoApplication,
+  buildGoModule,
   lib,
   pkg-config,
   libglvnd,
@@ -12,12 +12,12 @@
   vulkan-loader,
   vulkan-headers,
 }:
-buildGoApplication rec {
+buildGoModule {
   pname = "katzen";
   version = "master";
 
   inherit src;
-  modules = ../deps/client.toml;
+  vendorSha256 = "sha256-sTQZs/G/gMHfzvQLIwm4Jgq13skDuPkyVNDbtkiC7q0=";
 
   nativeBuildInputs = [
     pkg-config
