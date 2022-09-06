@@ -2,21 +2,37 @@
   src,
   buildGoApplication,
   lib,
+  pkg-config,
+  libglvnd,
+  glib,
+  libxkbcommon,
+  xorg,
+  mesa,
+  wayland,
+  vulkan-loader,
+  vulkan-headers,
 }:
 buildGoApplication rec {
-  pname = "katzenpost-server";
-  version = "0.0.11";
+  pname = "katzen";
+  version = "master";
 
   inherit src;
-  modules = ../deps/server.toml;
+  modules = ../deps/client.toml;
 
-  subPackages = [
-    "server/cmd/server"
+  nativeBuildInputs = [
+    pkg-config
   ];
-
-  postInstall = ''
-    mv $out/bin/server $out/bin/katzenpost-server
-  '';
+  buildInputs = [
+    libglvnd
+    glib
+    libxkbcommon
+    xorg.libX11
+    xorg.libXcursor
+    mesa
+    wayland
+    vulkan-loader
+    vulkan-headers
+  ];
 
   meta = with lib; {
     homepage = "https://github.com/katzenpost/server";

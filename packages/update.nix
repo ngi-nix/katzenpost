@@ -1,19 +1,25 @@
 {
-  src,
+  server-src,
+  client-src,
   writeShellScriptBin,
   gomod2nix,
 }:
 writeShellScriptBin "update-nixified-dependencies" ''
-  export PATH=${gomod2nix}/bin:$PATH
-
   cd $(git rev-parse --show-toplevel)
+  mkdir -p deps
   pushd deps
 
-  cp -f ${src}/go.mod ${src}/go.sum .
-
-  gomod2nix
-  git add gomod2nix.toml
-
+  cp -f ${server-src}/go.mod ${server-src}/go.sum .
+  ${gomod2nix}/bin/gomod2nix
+  mv gomod2nix.toml server.toml
+  git add server.toml
   rm -f go.mod go.sum
+
+  cp -f ${client-src}/go.mod ${client-src}/go.sum .
+  ${gomod2nix}/bin/gomod2nix
+  mv gomod2nix.toml client.toml
+  git add client.toml
+  rm -f go.mod go.sum
+
   popd
 ''

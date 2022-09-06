@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "client-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1661021340,
+        "narHash": "sha256-M52rQCIVHC77WoCoShvoPm+hZ8+12U8PXq4K/E9afjM=",
+        "owner": "katzenpost",
+        "repo": "katzen",
+        "rev": "ebcd29221c59ff3fd44f408d150a862c1a5c0628",
+        "type": "github"
+      },
+      "original": {
+        "owner": "katzenpost",
+        "ref": "main",
+        "repo": "katzen",
+        "type": "github"
+      }
+    },
     "gomod2nix": {
       "inputs": {
         "nixpkgs": [
@@ -35,12 +52,13 @@
     },
     "root": {
       "inputs": {
+        "client-src": "client-src",
         "gomod2nix": "gomod2nix",
         "nixpkgs": "nixpkgs",
-        "src": "src"
+        "server-src": "server-src"
       }
     },
-    "src": {
+    "server-src": {
       "flake": false,
       "locked": {
         "lastModified": 1637064236,

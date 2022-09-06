@@ -5,8 +5,12 @@
       url = "github:nix-community/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    src = {
+    server-src = {
       url = "github:katzenpost/katzenpost/v0.0.11";
+      flake = false;
+    };
+    client-src = {
+      url = "github:katzenpost/katzen/main";
       flake = false;
     };
   };
@@ -15,7 +19,8 @@
     self,
     nixpkgs,
     gomod2nix,
-    src,
+    server-src,
+    client-src,
   }: let
     supportedSystems = ["x86_64-linux"];
     forSystems = systems: fun: nixpkgs.lib.genAttrs systems fun;
@@ -32,12 +37,19 @@
     overlays.default = final: prev: {
       katzenpost-server =
         final.callPackage
-        ./packages/katzenpost-server.nix
-        {inherit src;};
+        ./packages/katzenpost-server.nix {
+          src = server-src;
+        };
       katzenpost-authority =
         final.callPackage
-        ./packages/katzenpost-authority.nix
-        {inherit src;};
+        ./packages/katzenpost-authority.nix {
+          src = server-src;
+        };
+      katzen =
+        final.callPackage
+        ./packages/katzen.nix {
+          src = client-src;
+        };
     };
 
     packages = forAllSystems (system: let
@@ -47,19 +59,23 @@
         (pkgs)
         katzenpost-server
         katzenpost-authority
+        katzen
         ;
       default = pkgs.symlinkJoin {
         name = "katzenpost";
         paths = [
           katzenpost-server
           katzenpost-authority
+          katzen
         ];
       };
     });
 
     apps = forAllSystems (system: let
       pkgs = nixpkgsFor.${system};
-      update = pkgs.callPackage ./packages/update.nix {inherit src;};
+      update = pkgs.callPackage ./packages/update.nix {
+        inherit server-src client-src;
+      };
     in {
       update = {
         type = "app";

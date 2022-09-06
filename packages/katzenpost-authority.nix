@@ -1,7 +1,6 @@
 {
   src,
   buildGoApplication,
-  fetchFromGitHub,
   lib,
   voting ? true,
 }:
@@ -10,7 +9,7 @@ buildGoApplication {
   version = "0.0.11";
 
   inherit src;
-  modules = ../deps/gomod2nix.toml;
+  modules = ../deps/server.toml;
 
   subPackages = [
     ("authority/"
