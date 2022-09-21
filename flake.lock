@@ -1,32 +1,27 @@
 {
   "nodes": {
-    "gomod2nix": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "utils": "utils"
-      },
+    "client-src": {
+      "flake": false,
       "locked": {
-        "lastModified": 1617032337,
-        "narHash": "sha256-BTmMxdIJyjOvOpNOaExcyvmJKI9OuhpWyXfOK164Epc=",
-        "owner": "tweag",
-        "repo": "gomod2nix",
-        "rev": "c78d7b9f15a24eba95fbc228509f513c83709d8b",
+        "lastModified": 1661021340,
+        "narHash": "sha256-M52rQCIVHC77WoCoShvoPm+hZ8+12U8PXq4K/E9afjM=",
+        "owner": "katzenpost",
+        "repo": "katzen",
+        "rev": "ebcd29221c59ff3fd44f408d150a862c1a5c0628",
         "type": "github"
       },
       "original": {
-        "owner": "tweag",
-        "repo": "gomod2nix",
+        "owner": "katzenpost",
+        "ref": "main",
+        "repo": "katzen",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1625294093,
-        "narHash": "sha256-TkdX0I0aXCvvFRnBAIIj3HjqWAyCzXzcWa6szKjtDL4=",
-        "path": "/nix/store/5hy98i77zn9h67ap74w8zr541ccq1pbn-source",
-        "rev": "a908087f05622c3453628ce35aa2e522d52cefcd",
+        "lastModified": 0,
+        "narHash": "sha256-ajXYYTE1uoY3ei/P1v+Knklf2QNCBxMtw1gByaPTGU4=",
+        "path": "/nix/store/l9gfyh4wh4yrv0m9is00x82ba0synxgb-source",
         "type": "path"
       },
       "original": {
@@ -36,22 +31,25 @@
     },
     "root": {
       "inputs": {
-        "gomod2nix": "gomod2nix",
-        "nixpkgs": "nixpkgs"
+        "client-src": "client-src",
+        "nixpkgs": "nixpkgs",
+        "server-src": "server-src"
       }
     },
-    "utils": {
+    "server-src": {
+      "flake": false,
       "locked": {
-        "lastModified": 1601282935,
-        "narHash": "sha256-WQAFV6sGGQxrRs3a+/Yj9xUYvhTpukQJIcMbIi7LCJ4=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "588973065fce51f4763287f0fda87a174d78bf48",
+        "lastModified": 1637064236,
+        "narHash": "sha256-QwJMAVHMUa6RBeLOkrzyyIOhM4LUoOcHktI6NtzS85Q=",
+        "owner": "katzenpost",
+        "repo": "katzenpost",
+        "rev": "3f1c7d225a5fc55efb576dc10bef3432f1144d59",
         "type": "github"
       },
       "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
+        "owner": "katzenpost",
+        "ref": "v0.0.11",
+        "repo": "katzenpost",
         "type": "github"
       }
     }

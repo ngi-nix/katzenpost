@@ -1,74 +1,80 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
-    gomod2nix ={
-      url = "github:tweag/gomod2nix";
-      inputs."nixpkgs".follows = "nixpkgs";
+    server-src = {
+      url = "github:katzenpost/katzenpost/v0.0.11";
+      flake = false;
+    };
+    client-src = {
+      url = "github:katzenpost/katzen/main";
+      flake = false;
     };
   };
 
-  outputs = { nixpkgs, self, gomod2nix }:
-    let
-      supportedSystems = [ "x86_64-linux" ];
-      forAllSystems' = systems: fun: nixpkgs.lib.genAttrs systems fun;
-      forAllSystems = forAllSystems' supportedSystems;
-    in
-      with nixpkgs.lib;
-      {
-        overlays.katzenpost = final: prev:
-          {
-            katzenpost-server = final.callPackage ./packages/katzenpost-server.nix {};
-            katzenpost-authority = final.callPackage ./packages/katzenpost-authority.nix {};
-            catshadow = final.callPackage ./packages/catshadow.nix {};
-            catchat = final.callPackage ./packages/catchat.nix {};
-          };
+  outputs = {
+    self,
+    nixpkgs,
+    server-src,
+    client-src,
+  }: let
+    supportedSystems = ["x86_64-linux"];
+    forSystems = systems: fun: nixpkgs.lib.genAttrs systems fun;
+    forAllSystems = forSystems supportedSystems;
+    nixpkgsFor = forAllSystems (system:
+      import nixpkgs {
+        inherit system;
+        overlays = [
+          self.overlays.default
+        ];
+      });
+  in {
+    overlays.default = final: prev: {
+      katzenpost-server =
+        final.callPackage
+        ./packages/katzenpost-server.nix {
+          src = server-src;
+        };
+      katzenpost-authority =
+        final.callPackage
+        ./packages/katzenpost-authority.nix {
+          src = server-src;
+        };
+      katzen =
+        final.callPackage
+        ./packages/katzen.nix {
+          src = client-src;
+        };
+    };
 
-        hydraJobs = forAllSystems (system:
-          let
-            pkgs = self.packages.${system};
-          in {
-            build-katzenpost-server = pkgs.katzenpost-server;
-            build-katzenpost-authority-voting = pkgs.katzenpost-authority.override { voting = true; };
-            build-katzenpost-authority-nonvoting = pkgs.katzenpost-authority.override { voting = false; };
-          });
-
-        defaultPackage = forAllSystems (system:
-          let
-            pkgs = import nixpkgs { inherit system; overlays = [ gomod2nix.overlay self.overlays.katzenpost ]; };
-          in
-            pkgs.symlinkJoin
-              { name = "katzenpost";
-                paths = with pkgs;
-                  [ katzenpost-server
-                    katzenpost-authority
-                    catchat
-                  ];
-              }
-        );
-
-        packages = forAllSystems (system:
-          let
-            pkgs = import nixpkgs { inherit system; overlays = [ gomod2nix.overlay self.overlays.katzenpost ]; };
-          in
-            {
-              inherit (pkgs)
-                katzenpost-server
-                katzenpost-authority
-                catchat;
-            }
-        );
-
-        apps = mapAttrs (_: v:
-          mapAttrs (_: a:
-            {
-              type = "app";
-              program = a;
-            }
-          ) v
-        ) self.packages;
-
-        defaultApp = mapAttrs (_: v:
-          v.catchat
-        ) self.apps;
+    packages = forAllSystems (system: let
+      pkgs = nixpkgsFor.${system};
+    in rec {
+      inherit
+        (pkgs)
+        katzenpost-server
+        katzenpost-authority
+        katzen
+        ;
+      default = pkgs.symlinkJoin {
+        name = "katzenpost";
+        paths = [
+          katzenpost-server
+          katzenpost-authority
+          katzen
+        ];
       };
+    });
+
+    formatter = forAllSystems (system: nixpkgsFor.${system}.alejandra);
+
+    hydraJobs = forAllSystems (system: let
+      pkgs = self.packages.${system};
+    in {
+      build-katzenpost-server = pkgs.katzenpost-server;
+      build-katzenpost-authority-voting =
+        pkgs.katzenpost-authority.override {voting = true;};
+      build-katzenpost-authority-nonvoting =
+        pkgs.katzenpost-authority.override {voting = false;};
+    });
+  };
 }
